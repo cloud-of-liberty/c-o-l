@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>ログイン</title>
+</head>
+<body class="colbody">
+	<div id="login" style="margin:0 auto;">
+		<div>
+			<div style="margin-top:30px">
+				<img src="/img/logo.png" style="width:100%" />
+			</div>
+			<div align="left" style="font-size:16px;color:#ff0000" >
+				<pre th:text="${message}"></pre>
+			</div>
+			
+			<form name="formlogin" action="#" th:action="@{/login}" th:object="${UserModel}" method="post">
+			<div style="text-align:left;">
+				<label for="username">ユーザ名:</label>
+				<input type="text" name="email" placeholder="メールアドレス" class="ui-imput-text ui-body-c"/>
+			</div>
+			<div style="text-align:left;">
+				<label for="password">パスワード:</label>
+				<input type="password" name="password" placeholder="パスワード" class="ui-imput-text ui-body-c"/>
+			</div>
+			<div>
+				<button type="button" data-theme="a" class="ui-btn-hidden" onclick="encryptPass();">ログイン</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

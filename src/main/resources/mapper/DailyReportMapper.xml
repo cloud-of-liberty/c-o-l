@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.5//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="jp.col.dao.IDailyReportDao">
+    <insert id="insertDailyReport" parameterType="jp.col.Model.DailyReportModel">
+           INSERT INTO sfdc.OS_DailyReport__c(ReportDate__c,WorkKind__c,Employee__c,BeginTime__c,EndTime__c,ReportStatus__c,
+                       Project1__c,Project2__c,Project3__c,Project4__c,Project5__c,Project6__c,Project7__c,Project8__c,Project9__c,Project10__c,
+                       WorkTime1__c,WorkTime2__c,WorkTime3__c,WorkTime4__c,WorkTime5__c,WorkTime6__c,WorkTime7__c,WorkTime8__c,WorkTime9__c,WorkTime10__c,
+                       Task1__c,Task2__c,Task3__c,Task4__c,Task5__c,Task6__c,Task7__c,Task8__c,Task9__c,Task10__c,
+                       WorkContent1__c,WorkContent2__c,WorkContent3__c,WorkContent4__c,WorkContent5__c,WorkContent6__c,WorkContent7__c,WorkContent8__c,WorkContent9__c,WorkContent10__c,
+                       Comment__c , breakTime__c)
+           VALUES (TO_DATE(#{reportDate},'yyyy/MM/dd'),#{workKind},#{employee},TO_TIMESTAMP(#{beginTime},'hh24:mi'),TO_TIMESTAMP(#{endTime},'hh24:mi'),#{reportStatus},
+                       #{projectId1},#{projectId2},#{projectId3},#{projectId4},#{projectId5},#{projectId6},#{projectId7},#{projectId8},#{projectId9},#{projectId10},
+                       CASE WHEN #{workTime1}='' THEN null ELSE TO_NUMBER(#{workTime1},'99.99') END,
+                       CASE WHEN #{workTime2}='' THEN null ELSE TO_NUMBER(#{workTime2},'99.99') END,
+                       CASE WHEN #{workTime3}='' THEN null ELSE TO_NUMBER(#{workTime3},'99.99') END,
+                       CASE WHEN #{workTime4}='' THEN null ELSE TO_NUMBER(#{workTime4},'99.99') END,
+                       CASE WHEN #{workTime5}='' THEN null ELSE TO_NUMBER(#{workTime5},'99.99') END,
+                       CASE WHEN #{workTime6}='' THEN null ELSE TO_NUMBER(#{workTime6},'99.99') END,
+                       CASE WHEN #{workTime7}='' THEN null ELSE TO_NUMBER(#{workTime7},'99.99') END,
+                       CASE WHEN #{workTime8}='' THEN null ELSE TO_NUMBER(#{workTime8},'99.99') END,
+                       CASE WHEN #{workTime9}='' THEN null ELSE TO_NUMBER(#{workTime9},'99.99') END,
+                       CASE WHEN #{workTime10}='' THEN null ELSE TO_NUMBER(#{workTime10},'99.99') END,
+                       #{task1},#{task2},#{task3},#{task4},#{task5},#{task6},#{task7},#{task8},#{task9},#{task10},
+                       #{workContent1},#{workContent2},#{workContent3},#{workContent4},#{workContent5},#{workContent6},#{workContent7},#{workContent8},#{workContent9},#{workContent10},
+                       #{comment},to_number(#{breakTime},'9.99'))
+    </insert>
+    <update id="updateDailyReportByDate"  parameterType="jp.col.Model.DailyReportModel">
+    		UPDATE sfdc.OS_DailyReport__c 
+    		   SET WorkKind__c=#{workKind},Employee__c=#{employee},BeginTime__c=TO_TIMESTAMP(#{beginTime},'hh24:mi'),EndTime__c=TO_TIMESTAMP(#{endTime},'hh24:mi'),
+    		       ReportStatus__c=#{reportStatus},
+    		       Project1__c=#{projectId1},Project2__c=#{projectId2},Project3__c=#{projectId3},Project4__c=#{projectId4},Project5__c=#{projectId5},Project6__c=#{projectId6},Project7__c=#{projectId7},Project8__c=#{projectId8},Project9__c=#{projectId9},Project10__c=#{projectId10},
+                   WorkTime1__c=(CASE WHEN #{workTime1}='' THEN null ELSE TO_NUMBER(#{workTime1},'99.99') END),
+                   WorkTime2__c=(CASE WHEN #{workTime2}='' THEN null ELSE TO_NUMBER(#{workTime2},'99.99') END),
+                   WorkTime3__c=(CASE WHEN #{workTime3}='' THEN null ELSE TO_NUMBER(#{workTime3},'99.99') END),
+                   WorkTime4__c=(CASE WHEN #{workTime4}='' THEN null ELSE TO_NUMBER(#{workTime4},'99.99') END),
+                   WorkTime5__c=(CASE WHEN #{workTime5}='' THEN null ELSE TO_NUMBER(#{workTime5},'99.99') END),
+                   WorkTime6__c=(CASE WHEN #{workTime6}='' THEN null ELSE TO_NUMBER(#{workTime6},'99.99') END),
+                   WorkTime7__c=(CASE WHEN #{workTime7}='' THEN null ELSE TO_NUMBER(#{workTime7},'99.99') END),
+                   WorkTime8__c=(CASE WHEN #{workTime8}='' THEN null ELSE TO_NUMBER(#{workTime8},'99.99') END),
+                   WorkTime9__c=(CASE WHEN #{workTime9}='' THEN null ELSE TO_NUMBER(#{workTime9},'99.99') END),
+                   WorkTime10__c=(CASE WHEN #{workTime10}='' THEN null ELSE TO_NUMBER(#{workTime10},'99.99') END),
+    		       WorkContent1__c=#{workContent1},WorkContent2__c=#{workContent2},WorkContent3__c=#{workContent3},WorkContent4__c=#{workContent4},WorkContent5__c=#{workContent5},WorkContent6__c=#{workContent6},WorkContent7__c=#{workContent7},WorkContent8__c=#{workContent8},WorkContent9__c=#{workContent9},WorkContent10__c=#{workContent10},
+    		       Task1__c=#{task1},Task2__c=#{task2},Task3__c=#{task3},Task4__c=#{task4},Task5__c=#{task5},Task6__c=#{task6},Task7__c=#{task7},Task8__c=#{task8},Task9__c=#{task9},Task10__c=#{task10},
+    		       Comment__c=#{comment} , breakTime__c=to_number(#{breakTime},'9.99')
+    		 WHERE ReportDate__c=TO_DATE(#{reportDate},'yyyy/MM/dd') AND Employee__c=#{employee}
+    </update>
+    <select id="findDailyReportByDate" resultType="jp.col.Model.DailyReportModel" parameterType="jp.col.Model.DailyReportModel">
+           SELECT DR.id,TO_CHAR(DR.ReportDate__c,'yyyy/MM/dd') AS reportDate,DR.WorkKind__c AS workKind,DR.Employee__c AS employee,DR.BeginTime__c AS beginTime,DR.EndTime__c AS endTime,
+           		  PIS.VALUE AS reportStatus,
+                  DR.Task1__c AS Task1,DR.Task2__c AS Task2,DR.Task3__c AS Task3,DR.Task4__c AS Task4,DR.Task5__c AS Task5,DR.Task6__c AS Task6,DR.Task7__c AS Task7,DR.Task8__c AS Task8,DR.Task9__c AS Task9,DR.Task10__c AS Task10,
+                  DR.Project1__c AS projectId1,DR.Project2__c AS projectId2,DR.Project3__c AS projectId3,DR.Project4__c AS projectId4,DR.Project5__c AS projectId5,DR.Project6__c AS projectId6,DR.Project7__c AS projectId7,DR.Project8__c AS projectId8,DR.Project9__c AS projectId9,DR.Project10__c AS projectId10,
+                  TO_CHAR(DR.WorkTime1__c,'09.99') AS workTime1,TO_CHAR(DR.WorkTime2__c,'09.99') AS workTime2,TO_CHAR(DR.WorkTime3__c,'09.99') AS workTime3,TO_CHAR(DR.WorkTime4__c,'09.99') AS workTime4,TO_CHAR(DR.WorkTime5__c,'09.99') AS workTime5,
+                  TO_CHAR(DR.WorkTime6__c,'09.99') AS workTime6,TO_CHAR(DR.WorkTime7__c,'09.99') AS workTime7,TO_CHAR(DR.WorkTime8__c,'09.99') AS workTime8,TO_CHAR(DR.WorkTime9__c,'09.99') AS workTime9,TO_CHAR(DR.WorkTime10__c,'09.99') AS workTime10,
+                  DR.WorkContent1__c AS workContent1,DR.WorkContent2__c AS workContent2,DR.WorkContent3__c AS workContent3,DR.WorkContent4__c AS workContent4,DR.WorkContent5__c AS workContent5,DR.WorkContent6__c AS workContent6,DR.WorkContent7__c AS workContent7,DR.WorkContent8__c AS workContent8,DR.WorkContent9__c AS workContent9,DR.WorkContent10__c AS workContent10,
+                  DR.Comment__c AS comment ,DR.breakTime__c AS breakTime
+             FROM sfdc.OS_DailyReport__c DR
+             LEFT OUTER JOIN PicklistAPIValue PIS ON PIS.tablename = 'OS_DailyReport__c'
+                                                AND PIS.columnname = 'ReportStatus__c'
+                                                AND PIS.apiame = DR.ReportStatus__c 
+           WHERE DR.ReportDate__c = TO_DATE(#{reportDate},'yyyy/MM/dd') AND DR.Employee__c=#{employee} limit 1
+    </select>
+    <select id="findDailyReportByMonth" resultType="jp.col.Model.DailyReportModel" parameterType="jp.col.Model.DailyReportModel">
+           SELECT TO_CHAR(DR.ReportDate__c,'yyyy/MM/dd') AS reportDate,DR.WorkKind__c AS workKind,DR.Employee__c AS employee,DR.BeginTime__c AS beginTime,DR.EndTime__c AS endTime,DR.ReportStatus__c AS reportStatus,
+                  DR.Project1__c AS projectId1,P1.Name AS projectName1,DR.WorkContent1__c AS workContent1,DR.Task1__c AS Task1,
+                  DR.Project2__c AS projectId2,P2.Name AS projectName2,DR.WorkContent2__c AS workContent2,DR.Task2__c AS Task2,
+                  DR.Project3__c AS projectId3,P3.Name AS projectName3,DR.WorkContent3__c AS workContent3,DR.Task3__c AS Task3,
+                  DR.Project4__c AS projectId4,P4.Name AS projectName4,DR.WorkContent4__c AS workContent4,DR.Task4__c AS Task4,
+                  DR.Project5__c AS projectId5,P5.Name AS projectName5,DR.WorkContent5__c AS workContent5,DR.Task5__c AS Task5,
+                  DR.Project6__c AS projectId6,P6.Name AS projectName6,DR.WorkContent6__c AS workContent6,DR.Task6__c AS Task6,
+                  DR.Project7__c AS projectId7,P7.Name AS projectName7,DR.WorkContent7__c AS workContent7,DR.Task7__c AS Task7,
+                  DR.Project8__c AS projectId8,P8.Name AS projectName8,DR.WorkContent8__c AS workContent8,DR.Task8__c AS Task8,
+                  DR.Project9__c AS projectId9,P9.Name AS projectName9,DR.WorkContent9__c AS workContent9,DR.Task9__c AS Task9,
+                  DR.Project10__c AS projectId10,P10.Name AS projectName10,DR.WorkContent10__c AS workContent10,DR.Task10__c AS Task10,
+                  coalesce(DR.WorkTime1__c,0) AS workTime1,coalesce(DR.WorkTime2__c,0) AS workTime2,coalesce(DR.WorkTime3__c,0) AS workTime3,coalesce(DR.WorkTime4__c,0) AS workTime4,coalesce(DR.WorkTime5__c,0) AS workTime5,
+                  coalesce(DR.WorkTime6__c,0) AS workTime6,coalesce(DR.WorkTime7__c,0) AS workTime7,coalesce(DR.WorkTime8__c,0) AS workTime8,coalesce(DR.WorkTime9__c,0) AS workTime9,coalesce(DR.WorkTime10__c,0) AS workTime10
+           FROM            sfdc.OS_DailyReport__c AS DR
+           Left Outer Join sfdc.OS_Project__c AS P1 ON DR.Project1__c = P1.sfid
+           Left Outer Join sfdc.OS_Project__c AS P2 ON DR.Project2__c = P2.sfid
+           Left Outer Join sfdc.OS_Project__c AS P3 ON DR.Project3__c = P3.sfid
+           Left Outer Join sfdc.OS_Project__c AS P4 ON DR.Project4__c = P4.sfid
+           Left Outer Join sfdc.OS_Project__c AS P5 ON DR.Project5__c = P5.sfid
+           Left Outer Join sfdc.OS_Project__c AS P6 ON DR.Project6__c = P6.sfid
+           Left Outer Join sfdc.OS_Project__c AS P7 ON DR.Project7__c = P7.sfid
+           Left Outer Join sfdc.OS_Project__c AS P8 ON DR.Project8__c = P8.sfid
+           Left Outer Join sfdc.OS_Project__c AS P9 ON DR.Project9__c = P9.sfid
+           Left Outer Join sfdc.OS_Project__c AS P10 ON DR.Project10__c = P10.sfid
+           WHERE TO_CHAR(ReportDate__c,'yyyy/MM') = #{reportDate} AND Employee__c=#{employee} ORDER BY ReportDate__c
+    </select>
+</mapper>

@@ -1,0 +1,137 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>ユーザ情報</title>
+</head>
+<body class="colbody" onload="userinfoready()">
+    <div id="userinfo" style="margin:0 auto;">
+        <div class="header-btn">
+            <form action="#" th:action="@{/returnIndex}" method="post">
+                 <p><input type="submit" value="戻る" /> </p>
+            </form>
+        </div>
+        <div>
+            <h3>ユーザ情報</h3>
+            <form action="#" th:action="@{/}" th:object="${UserModel}" method="post">
+            <div>
+			  <table border="0">
+			    <tr>
+			      <th align="right">社員名前: </th><td  align="left" th:text="${record.userName}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">社員種類: </th><td  align="left" th:text="${record.employeeType}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">社員番号: </th><td  align="left" th:text="${record.employeeNo}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">所属部署: </th><td align="left" th:text="${record.department}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">役職: </th><td align="left" th:text="${record.position}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">社員用メールアドレス: </th><td align="left" th:text="${record.email}"></td>
+			    </tr>
+			    <tr>
+			      <th align="right">残り有休: </th><td align="left" th:text="${record.restVacation}"></td>
+			    </tr>
+              </table>
+            </div>
+    		<div>
+	        	<input type="button" id="openother" value="その他"  onclick="opencloseuserinfo('otherinfo')"/>
+	    	</div>	
+        	<div id="otherinfo" style="display: none;">
+        		<table border="0">
+			    	<tr>
+			      		<th align="right">名前の読み方: </th><td align="left" th:text="${record.nameHowtoRead}"></td>
+			    	</tr>
+			    	<tr>
+			      		<th align="right">名前ローマ字: </th><td align="left" th:text="${record.nameRomaji}"></td>
+			    	</tr>
+				    <tr>
+				      <th align="right">性別: </th><td align="left" th:text="${record.gender}"></td>
+				    </tr>
+			    	<tr>
+			      		<th align="right">生年月日: </th><td align="left" th:text="${record.birthday}"></td>
+			    	</tr>
+				    <tr>
+				      <th align="right">年齢: </th><td align="left" th:text="${record.age}"></td>
+				    </tr>
+				    <tr>
+				      <th align="right">電話番号: </th><td align="left" th:text="${record.tel}"></td>
+				    </tr>
+				    <tr>
+				      <th align="right">個人メールアドレス: </th><td align="left" th:text="${record.personEmail}"></td>
+				    </tr>
+				    <tr>
+				      <th align="right">入社日: </th><td align="left" th:text="${record.HireDate}"></td>
+				    </tr>
+				    <tr>
+				      <th align="right">緊急連絡方式: </th><td align="left" th:text="${record.emergencyContactMethod}"></td>
+				    </tr>
+				    
+			    </table>
+			</div>
+    		<div>
+	        	<input type="button" id="openaddress" value="住所"  onclick="opencloseuserinfo('addressinfo')"/>
+	    	</div>	
+        	<div id="addressinfo" style="display: none;">
+        		<table border="0">
+			    	<tr>
+			      		<th align="right">郵便番号: </th><td align="left" th:text="${record.PostalCode}"></td>
+			    	</tr>
+			    	<tr>
+			      		<th align="right">住所: </th><td align="left" th:text="${record.address}"></td>
+			    	</tr>				    
+			    </table>
+			</div>
+    		<div>
+	        	<input type="button" id="opencert" value="資格情報"  onclick="opencloseuserinfo('certinfo')"/>
+	    	</div>	
+            <div  id="certinfo" style="display: none;">
+			  <table class="detail">
+			    <tr>
+			      <th align="center">No.</th>
+			      <th align="center">資格名</th>
+			      <th align="center">資格取得日</th>
+			    </tr>
+			    <tr th:each="certification : ${certifications}">
+			      <td  align="left" th:text="${certificationStat.index+1}"></td>
+			      <td  align="left" th:text="${certification.name}"></td>
+			      <td  align="left" th:text="${certification.certificationSyutokubi}"></td>
+			    </tr>
+              </table>
+            </div>
+    		<div>
+	        	<input type="button" id="openvisa" value="ビザ情報" onclick="opencloseuserinfo('visainfo')"/>
+	    	</div>	
+        	<div id="visainfo" style="display: none;" >
+        		<table border="0">
+			    	<tr>
+			      		<th align="right">ビザの有効期間: </th><td align="left" th:text="${record.VisaExpiry}"></td>
+			    	</tr>
+			    	<tr>
+			      		<th align="right">在留の種類: </th><td align="left" th:text="${record.VisaType}"></td>
+			    	</tr>				    
+			    </table>
+			</div>
+            </form>
+<!--    		<div>
+	        	<input type="button" id="opencontract" value="契約情報" />
+	    	</div>	
+             <div  id="contractinfo">
+        		<table border="0">
+			    	<tr>
+			      		<th align="right">契約名: </th><td align="left" th:text="${contractInfo.name}"></td>
+			    	</tr>
+			    	<tr>
+			      		<th align="right">契約開始日: </th><td align="left" th:text="${contractInfo.contractStartDate}"></td>
+			    	</tr>				    
+			    	<tr>
+			      		<th align="right">契約終了日: </th><td align="left" th:text="${contractInfo.contractEndDate}"></td>
+			    	</tr>				    
+			    </table>
+            </div> -->
+        </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+ .colbody{
+    text-align: center;
+}
+
+  @media screen and (min-width:600px) and (max-width:960px){
+    #login,#menu,#applyinfo,#userinfo,#applyhis,#dailyReportinfo,#error{width:450px;}
+  }
+  @media screen and (min-width:960px){
+    #login,#menu,#applyinfo,#userinfo,#dailyReportinfo{width:450px;}
+    #userinfo{width:520px;}
+    #applyhis,#error{width:900px;}
+  }
+
+#applyhis a:link{color:blue;}
+#applyhis a:visited{color:blue;}
+#applyhis a:hover{color:blue;}
+#applyhis a:active{color:blue;}
+
+#menu a:link{color:blue;}
+#menu a:visited{color:blue;}
+#menu a:hover{color:blue;}
+#menus a:active{color:blue;}
+
+table.detail {
+	width:100%;
+	margin-bottom:20px;
+	border-bottom:2px solid #ABABAB;
+	border-collapse:separate;
+	border-spacing:0;
+}
+table.detail th.headRow {
+    padding: 3px 10px;
+    border: 1px;
+    color: #FFFFFF;
+    background: #BF0000;
+	border-top: 1px solid #ABABAB;
+}
+table.detail {
+	margin:0;
+	padding:0;
+	empty-cells:show;
+	font-size:90%;
+	border-top: 1px solid #ABABAB;
+}
+table.detail, td.note {
+	margin:0;
+	padding:0;
+	empty-cells:show;
+	font-size:90%
+}
+table.detail th.headCol {
+	width:30%;
+	border-right: 1px solid #ABABAB;
+    border-left: 2px solid #ABABAB;
+	border-top: 1px solid #ABABAB;
+    background: #F5F5F5;
+}
+
+table.detail td.note {
+    width: 7.5em;
+    border-right: 2px solid #ABABAB;
+    text-align:left;
+	border-top: 1px solid #ABABAB;
+}
+
+.round{width:50px;height:50px;border-radius:50px}
+
+

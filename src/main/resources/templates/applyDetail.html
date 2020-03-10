@@ -1,0 +1,47 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>社員申請詳細</title>
+</head>
+<body class="colbody">
+    <div id="applyinfo" style="margin:0 auto;">
+        <div class="header-btn">
+            <form action="#" th:action="@{/applyHistory}" method="post">
+                 <p><input type="submit" value="戻る" /> </p>
+            </form>
+        </div>
+        <br>
+        <div>
+            <h3>社員申請詳細</h3>
+            <div>
+				<table border="0">
+					<tr>
+						<th align="right" width="30%">申請日時: </th><td align="left" width="70%" th:text="${apply.applyDateTime}"></td>
+				    </tr>
+					<tr>
+						<th align="right">申請種類: </th><td align="left" th:text="${apply.applyTypeName}"></td>
+				    </tr>
+					<tr>
+						<th align="right">申請状態: </th><td align="left" th:text="${apply.applyStatus}"></td>
+				    </tr>
+					<tr>
+						<th align="right">申請内容: </th><td align="left" th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(apply.applyContent),'\n','<br />'))}" style="font-size:9pt;"></td>
+				    </tr>
+					<tr th:style="'display:' + @{(${isPaidHoliday} ? 'table-row' : 'none')} + ''">
+						<th align="right">有給利用: </th><td align="left" th:text="${apply.applyVacation}"></td>
+				    </tr>
+					<tr th:style="'display:' + @{(${isPaidHoliday}? 'table-row' : 'none')} + ''">
+						<th align="right">休暇開始日時: </th><td align="left" th:text="${apply.holidayStartDate}"></td>
+				    </tr>
+					<tr th:style="'display:' + @{(${isPaidHoliday}? 'table-row' : 'none')} + ''">
+						<th align="right">休暇終了日時: </th><td align="left" th:text="${apply.holidayEndDate}"></td>
+				    </tr>				    
+					<tr th:style="'display:' + @{(${apply.applyStatus}=='却下済み' ? 'table-row' : 'none')} + ''">
+						<th align="right">却下理由: </th><td align="left" th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(apply.rejectReason),'\n','<br />'))}"></td>
+				    </tr>
+				     
+			    </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

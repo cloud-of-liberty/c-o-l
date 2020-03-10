@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.5//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="jp.col.dao.IApplyDao">
+    <insert id="insertApply" parameterType="jp.col.Model.ApplyModel">
+           INSERT INTO sfdc.OS_EmployeeApply__c(ApplicationType__c,ApplyStatus__c,ApplyContent__c,EmployeeInfo__c,ApplicantMail__c,
+                                                ApplyVacationDays__c,ApplyVacationHours__c,
+                                                HolidayStartDate__c,HolidayEndDate__c)
+           VALUES (#{applyType},#{applyStatus},#{applyContent},#{employeeId},#{applicantMail},
+                   to_number(#{applyVacationDays},'9'),to_number(#{applyVacationHours},'9.9'),
+                   CASE WHEN #{holidayStartDate}='' THEN null ELSE to_timestamp(#{holidayStartDate},'yyyy-MM-ddThh24:mi')  AT TIME ZONE 'UTC' AT TIME ZONE 'JST' END,
+                   CASE WHEN #{holidayEndDate}='' THEN null ELSE to_timestamp(#{holidayEndDate},'yyyy-MM-ddThh24:mi')  AT TIME ZONE 'UTC' AT TIME ZONE 'JST' END)
+    </insert>
+    <select id="findApplyHistoryByEmployeeId" resultType="jp.col.Model.ApplyModel" parameterType="String">
+           SELECT apply.id,
+           		  CASE WHEN apply.Name IS NULL THEN 'Salesforce同期中'  
+                  ELSE apply.Name END AS Name,
+                  type.sfid as applyType,type.name AS applyTypeName,
+                  apply.ApplyStatus__c as applyStatus,
+                  CASE WHEN apply.CreatedDate IS NULL THEN 'Salesforce同期中' 
+                  ELSE TO_CHAR((apply.CreatedDate AT TIME ZONE 'UTC' AT TIME ZONE 'JST'),'yyyy/MM/dd hh24:mi') END AS applyDateTime,
+                  apply.ApplyContent__c AS applyContent__c
+           FROM   sfdc.OS_EmployeeApply__c AS apply
+           LEFT OUTER JOIN  sfdc.OS_ApplyType__c AS type ON apply.ApplicationType__c = type.sfid 
+           WHERE apply.EmployeeInfo__c = #{employeeId}
+           ORDER BY apply.CreatedDate DESC
+    </select>
+    <select id="findApplyById" resultType="jp.col.Model.ApplyModel" parameterType="int">
+           SELECT apply.id,
+           		  CASE WHEN apply.Name IS NULL THEN 'Salesforce同期中'  
+                  ELSE apply.Name END AS Name,
+                  apply.ApplicationType__c as applyType,apply.ApplyStatus__c as applyStatus,
+                  CASE WHEN apply.CreatedDate IS NULL THEN 'Salesforce同期中' 
+                  ELSE TO_CHAR((apply.CreatedDate AT TIME ZONE 'UTC' AT TIME ZONE 'JST'),'yyyy-MM-dd hh24:mi') END AS applyDateTime,
+                  apply.ApplyContent__c AS applyContent,
+                  type.sfid as applyType,type.name AS applyTypeName,
+                  apply.EmployeeInfo__c as employeeId , apply.RejectReason__c as RejectReason,
+                  apply.ApplyVacationDays__c || '日間' || ApplyVacationHours__c || '時間' AS applyVacation,
+                  TO_CHAR((apply.HolidayStartDate__c AT TIME ZONE 'UTC' AT TIME ZONE 'JST'),'yyyy-MM-dd hh24:mi') AS HolidayStartDate, 
+                  TO_CHAR((apply.HolidayEndDate__c AT TIME ZONE 'UTC' AT TIME ZONE 'JST'),'yyyy-MM-dd hh24:mi') AS HolidayEndDate
+           FROM   sfdc.OS_EmployeeApply__c AS apply
+           LEFT OUTER JOIN  sfdc.OS_ApplyType__c AS type ON apply.ApplicationType__c = type.sfid 
+           WHERE apply.id = #{id}
+    </select>
+</mapper>
