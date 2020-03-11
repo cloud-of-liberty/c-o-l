@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>メインメニュー</title>
+  <script type="text/javascript">
+  window.location.href = "/Test/";
+  </script>
+</head>
+<body class="colbody">
+    <div id="menu"  style="margin:0 auto;">
+        <div id="imgdiv" style="text-align:center;">
+	        <p th:text="${welcomemessage}"></p>
+        </div>
+
+        <div>
+            <h3>メインメニュー</h3>
+            <div style="text-align:center;">
+	            <form name="personInfo" th:action="@{/personInfo}" method='post'>
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">個人情報照会</button>
+                </form>
+            </div>
+            <div style="text-align:center;">
+	            <form name="apply" action="#" th:action="@{/newApply}" method="post">
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">社員申請</button>
+    	        </form>
+            </div>
+            <div style="text-align:center;">
+	            <form name="applyHistory" action="#" th:action="@{/applyHistory}" method="post">
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">社員申請履歴</button>
+    	        </form>
+            </div>
+            <div style="text-align:center;">
+	            <form name="dailyReportList" action="#" th:action="@{/dailyReportListinit}" method="post">
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">日報一覧</button>
+    	        </form>
+            </div>
+            <div style="text-align:center;">
+	            <form name="passwordChange" action="#" th:action="@{/passwordChangeInit}" method="post">
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">パスワード変更</button>
+    	        </form>
+            </div>
+            <div style="text-align:center;">
+			    <button type="button" data-theme="b" class="ui-btn-hidden" onclick="javascript:window.open('https://www.c-o-l.jp/','_blank')">会社情報</button>
+            </div>
+            <div style="text-align:center;">
+	            <form name="logout" action="#" th:action="@{/logout}" method="post">
+				    <button type="submit" data-theme="b" class="ui-btn-hidden">ログアウト</button>
+    	        </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

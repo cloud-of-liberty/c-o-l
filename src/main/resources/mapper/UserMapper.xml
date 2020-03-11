@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.5//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="jp.col.dao.IUserDao">
+    <select id="findByEmail" resultType="jp.col.Model.UserModel" parameterType="jp.col.Model.UserModel">
+           SELECT EM.id,
+           		  EM.sfid,
+           		  EM.password__c as password,EM.email__c as email,EM.Lastname__c||'　'||EM.Firstname__c AS userName ,
+                  coalesce(EM.RestVacationDays__c,0) AS restVacationDays, coalesce(EM.RestVacationHours__c,0) AS restVacationHours
+           FROM   sfdc.OS_EmployeeInfo__c EM
+           where email__c = #{email} 
+             AND (RetirementDay__c is null OR (RetirementDay__c IS NOT null AND current_date <![CDATA[ <= ]]> RetirementDay__c)) limit 1
+    </select>
+    <select id="findUserInfoById" resultType="jp.col.Model.UserModel" parameterType="long" flushCache="true">
+           SELECT EM.id, EM.sfid, EM.Lastname__c||'　'||EM.Firstname__c AS userName, 
+            	  EM.password__c AS password,EM.email__c AS email,
+                  EM.Name AS EmployeeNo , 
+                  EM.Tel__c AS Tel,
+                  EM.LastnameReadMothed__c ||'　'||EM.FisrtnameHowtoRead__c AS nameHowtoRead,
+                  EM.LastnameRomaji__c ||'　'||EM.FirstnameRomaji__c AS nameRomaji,
+                  EM.Birthday__c AS Birthday, TO_CHAR(EXTRACT(YEAR FROM AGE(CURRENT_DATE, EM.Birthday__c)),'999') age,
+                  EM.PersonEmail__c AS PersonEmail , EM.HireDate__c AS HireDate,
+                  EM.EmergencyContactMethod__c AS EmergencyContactMethod,
+                  EM.RestVacationDays__c || '日' || EM.RestVacationHours__c || '時間' AS RestVacation,
+                  EM.RetirementDay__c AS RetirementDay,
+                  EM.PostalCode__c AS PostalCode,
+                  PIPR.VALUE||EM.CityWard__c||EM.StreetBunch__c AS address,
+                  EM.VisaExpiry__c AS VisaExpiry,
+                  PIP.VALUE AS Position , 
+                  PIG.VALUE AS gender , 
+                  PIT.VALUE AS EmployeeType, 
+                  PID.VALUE AS department , 
+                  PIV.VALUE AS VisaType 
+             FROM sfdc.OS_EmployeeInfo__c EM
+             LEFT OUTER JOIN PicklistAPIValue PIV ON PIV.tablename = 'OS_EmployeeInfo__c'
+                                                AND PIV.columnname = 'VisaType__c'
+                                                AND PIV.apiame = EM.VisaType__c 
+             LEFT OUTER JOIN PicklistAPIValue PIP ON PIP.tablename = 'OS_EmployeeInfo__c'
+                                                AND PIP.columnname = 'Position__c'
+                                                AND PIP.apiame = EM.Position__c 
+             LEFT OUTER JOIN PicklistAPIValue PIG ON PIG.tablename = 'OS_EmployeeInfo__c'
+                                                AND PIG.columnname = 'Gender__c'
+                                                AND PIG.apiame = EM.Gender__c 
+             LEFT OUTER JOIN PicklistAPIValue PIPR ON PIPR.tablename = 'OS_EmployeeInfo__c'
+                                                AND PIPR.columnname = 'Prefectures__c'
+                                                AND PIPR.apiame = EM.Prefectures__c 
+             LEFT OUTER JOIN PicklistAPIValue PIT ON PIT.tablename = 'OS_EmployeeInfo__c'
+                                                AND PIT.columnname = 'EmployeeType__c'
+                                                AND PIT.apiame = EM.EmployeeType__c 
+             LEFT OUTER JOIN PicklistAPIValue PID ON PID.tablename = 'OS_EmployeeInfo__c'
+                                                AND PID.columnname = 'Department__c'
+                                                AND PID.apiame = EM.Department__c 
+             WHERE EM.id = #{id} LIMIT 1
+    </select>
+    <update id="updatePassword" parameterType="jp.col.Model.UserModel">
+           UPDATE sfdc.OS_EmployeeInfo__c 
+                  SET password__c = #{password}
+            WHERE id = #{id}
+    </update>
+    <select id="findCertificationInfoById" resultType="jp.col.Model.CertificationModel" parameterType="long">
+           SELECT Employee.id,CerMaster.Name,CerMaster.CertificationField__c as CertificationField,
+                  Kanri.CertificationSyutokubi__c AS CertificationSyutokubi, CerMaster.Bikou__c as Bikou 
+           FROM   sfdc.OS_EmployeeInfo__c AS Employee,
+                  sfdc.OS_CertificationMaster__c AS CerMaster,
+                  sfdc.OS_EmployeeCertificationKanri__c AS Kanri
+           WHERE  Employee.sfid = Kanri.employeeinfo__c
+             AND  Kanri.CertificationMaster__c = CerMaster.sfid
+             AND  Employee.id = #{id}
+             AND  (RetirementDay__c is null OR (RetirementDay__c IS NOT null AND current_date <![CDATA[ <= ]]> RetirementDay__c))
+           ORDER BY Kanri.CertificationSyutokubi__c DESC
+    </select>
+    <select id="findContractInfoById" resultType="jp.col.Model.ContractInfoModel" parameterType="long">
+           SELECT Employee.id,Contract.Name,Contract.ContractDate__c as ContractDate,
+                  Employee.EmployeeType__c AS EmployeeType,
+                  Contract.ContractStartDate__c AS ContractStartDate, 
+                  Contract.ContractEndDate__c as ContractEndDate 
+           FROM   sfdc.OS_EmployeeInfo__c AS Employee,
+                  sfdc.OS_ContractInfo__c AS Contract
+           WHERE  Employee.sfid = Contract.ContractTaisho__c
+             AND  Employee.id = #{id}
+            limit 1
+    </select>
+</mapper>

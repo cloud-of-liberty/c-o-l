@@ -1,0 +1,77 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>社員申請</title>
+</head>
+<body class="colbody">
+    <div id="applyinfo" style="margin:0 auto;">
+        <div class="header-btn">
+            <form action="#" th:action="@{/returnIndex}" method="post">
+                 <p><input type="submit" value="戻る" /> </p>
+            </form>
+        </div>
+        <br>
+        <div>
+            <h3>申請情報</h3>
+            <form name="form1" action="#" th:action="@{/saveApply}" th:object="${ApplyModel}" method="post">
+			<div align="left" style="font-size:16px;color:#ff0000" >
+			<pre th:text="${message}"></pre>
+			</div>
+            <div>
+			    <table border="0" width="100%">
+			        <tr>
+			            <th>申請種類:</th>
+			            <td colspan="4">
+							<select id="applyType" name="applyType" onchange="javascript:changeApplyType();">
+								<option value="">--選択してください--</option>
+								<option th:each="applyType:${applyTypes}" th:selected="${applyType.sfid==record.applyType}" th:value="${applyType.sfid}" th:text="${applyType.name}" ></option>
+							</select>
+			            </td>
+			        </tr>
+			        <tr th:style="'display:' + @{(${isPaidHoliday} ? 'table-row' : 'none')} + ''">
+			            <th>残り有休: </th>
+			            <td th:text="${record.restVacationDays}"></td>
+			            <td>日間</td>
+			            <td th:text="${record.restVacationHours}"></td>
+			            <td>時間</td>
+			        </tr>
+			        <tr th:style="'display:' + @{(${isPaidHoliday} ? 'table-row' : 'none')} + ''">
+			            <th>有給利用: </th>
+			            <td>
+			            	<select name="applyVacationDays" style="text-align:left" >
+								<option th:each="days:${daysList}" th:value="${days}" th:text="${days}" th:selected="${days==record.applyVacationDays}"></option>
+							</select>
+			            </td>
+			            <td>日間</td>
+			            <td>
+			            	<select name="applyVacationHours" style="text-align:left" >
+								<option th:each="hours:${hoursList}" th:value="${hours}" th:text="${hours}" th:selected="${hours==record.applyVacationHours}"></option>
+							</select>
+			            </td>
+			            <td>時間</td>
+			        </tr>
+			        <tr th:style="'display:' + @{(${isHoliday} ? 'table-row' : 'none')} + ''">
+			            <th>開始日時:</th>
+			            <td colspan="4">
+			        		<input name="holidayStartDate" type="datetime-local" th:value="${record.holidayStartDate}" />
+			            </td>
+			        </tr>
+			        <tr th:style="'display:' + @{(${isHoliday} ? 'table-row' : 'none')} + ''">
+			            <th>終了日時:</th>
+			            <td colspan="4">
+			        		<input name="holidayEndDate" type="datetime-local" th:value="${record.holidayEndDate}"/>
+			            </td>
+			        </tr>
+			        <tr>
+			            <th>申請内容: </th>
+			            <td colspan="4"><textarea th:text="${record.applyContent}" rows="10" cols="30" name="applyContent" id="applyContent" style="font-size:9pt;height:300px"></textarea></td>
+			        </tr>
+			    </table>
+            </div>
+			<div>
+			    <p><input type="submit" value="申請" onclick="return confirm('申請します、よろしいでしょうか。');"/></p>
+            </div>
+			</form>
+        </div>
+    </div>
+</body>
+</html>

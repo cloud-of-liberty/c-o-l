@@ -1,0 +1,44 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>社員申請履歴</title>
+</head>
+<body class="colbody">
+    <div id="applyhis" style="margin:0 auto;">
+        <div class="header-btn">
+            <form action="#" th:action="@{/returnIndex}" method="post">
+                 <p><input type="submit" value="戻る" /> </p>
+            </form>
+        </div>
+        <BR />
+        <div>
+            <h3>社員申請履歴</h3>
+            <div id="history-list" class="history-list">
+			  <table>
+			    <tr class="head-tr">
+			      <th align="center">番号</th>
+			      <th align="center">申請日時</th>
+			      <th align="center">申請種類</th>
+			      <th align="center">申請状態</th>
+			    </tr>
+			    <tr th:each="apply,element : ${applys}" 
+			        th:class="${#strings.concat('base-tr ', element.even ? 'even-line' : 'odd-line')}"
+			        ondblclick="$(this).find('.submit-button input')[0].click();">
+			      <td  align="left" th:text="${apply.name}"></td>
+			      <td  align="left" th:text="${apply.applyDateTime}"></td>
+			      <td  align="left" th:text="${apply.applyTypeName}"></td>
+			      <td  align="left" th:text="${apply.applyStatus}"></td>
+			      <td style="display:none">
+			        <form name="'applyDetail' + ${element.index}" action="#" th:action="@{/applyDetail}" method="post">
+    	              <input name="id" type="hidden" th:value="${apply.id}" />
+    	              <div class="submit-button">
+    	                <input type="submit" value="詳細"/>
+    	              </div>
+    	            </form>
+			      </td>
+			    </tr>
+              </table>
+            </div>
+         </div>
+    </div>	
+</body>
+</html>

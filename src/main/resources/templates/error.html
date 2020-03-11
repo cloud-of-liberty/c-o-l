@@ -1,0 +1,17 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>エラー</title>
+</head>
+<body>
+    <div id="error" style="margin:0 auto;">
+        <div>
+	        <p th:text="${message}">Exception message</p>
+        </div>
+        <div>
+            <form action="#" th:action="@{/returnIndex}" method="post">
+                 <p><input type="submit" value="メインメニューへ" /> </p>
+            </form>
+        </div>
+    </div>
+  </body>
+</html>

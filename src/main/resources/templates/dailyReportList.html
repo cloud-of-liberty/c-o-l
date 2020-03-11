@@ -1,0 +1,80 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head　th:include="fragments/layout :: head(~{::title})">
+  <title>日報一覧</title>
+</head>
+<body class="colbody">
+    <div id="applyhis" style="margin:0 auto;">
+      <div class="header-btn">
+              <form action="#" th:action="@{/returnIndex}" method="post">
+                <input type="submit" value="戻る" />
+              </form>
+            </div>
+        <div>
+            <h3>日報一覧</h3>
+            <div class="calendar-div">
+              <div class="calendar-title">
+	            <form name="changeMonth" action="#" th:action="@{/dailyReportListinit}" method="post">
+    	            <a href="javascript:preMonth();" class="ui-link-inherit">＜</a>
+    	            <input name="currentDate" type="hidden" th:value="${currentDate}" />
+    	            <input name="mode" type="hidden" />
+	                <span th:text="${currentDate}"></span>
+    	            <a href="javascript:nextMonth();" class="ui-link-inherit">＞</a>
+    	        </form>
+              </div>
+			  <table class="calendar-table">
+			    <tr>
+			      <th align="center">日</th>
+			      <th align="center">月</th>
+			      <th align="center">火</th>
+			      <th align="center">水</th>
+			      <th align="center">木</th>
+			      <th align="center">金</th>
+			      <th align="center">土</th>
+			    </tr>
+			    <tr th:each="rowReport : ${reportList}">
+			      <td th:each="report : ${rowReport}">
+			      <div class="calendar-date">
+　　                 <a class="calendar-date-link" th:class="${#strings.concat( report.taskList.size()>0 ? 'calendar-date-highlight' : 'calendar-date-normal' ,' calendar-date-link')}" href="#" th:text="${report.label}" th:onclick="showListDetail([[${report.label}]]);">
+　　                 </a>
+
+                  
+                  </div>
+                 </td>
+			    </tr>
+              </table>
+              <div id="tohide-btn" class="show-hide-btn"><button onclick="hideCalendar()">∧</button></div>
+              <div id="toshow-btn" class="show-hide-btn hide"><button onclick="showCalendar()">∨</button></div>
+            </div>
+            
+            
+            <div id="detail-list" class="report-detail-list">
+			  <table>
+			    <tr th:each="report,element : ${detailReportList}" th:class="${#strings.concat('base-tr ', element.even ? 'even-line' : 'odd-line')}"
+			        th:id="'detail-list' + ${element.index}" 
+			        ondblclick="$(this).find('.edit-button input')[0].click();">
+			      <td th:text="${report.label}"></td>
+			      <td>
+			        <div class="task-row" th:each="task : ${report.taskList}">
+			          <div class="task-name-col" th:text="${task.name}"></div>
+			          <div class="task-project-col" th:text="${task.projectName}"></div>
+			          <div class="task-content-col" th:text="${task.taskContent}"></div>
+			          <div class="task-time-col" th:text="${task.spentTime}"></div>
+			        </div>
+			        <form action="#" th:action="@{/newDailyReportInit}"+ method="post">
+                      <input type="hidden" name="reportDate" th:value="${report.dateStr}" />
+                      <div class="edit-button"><input type="submit" value="&#x270e;"/> </div>
+  	      	        </form>
+			      </td>
+			    </tr>
+              </table>
+            </div>
+          <div class="section-div"></div>
+          <!-- <div class="footer-div">
+          <form action="#" th:action="@{/returnIndex}" method="post">
+            <input type="submit" value="戻る" />
+          </form>
+          </div>-->
+        </div>
+    </div>
+</body>
+</html>
