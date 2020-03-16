@@ -40,7 +40,7 @@ function encryptPass(){
 
 function changeApplyType(){
     if (document.getElementById("applyType").value != "" ) {
-        document.form1.action = "/newApply";
+        document.form1.action = "/NewApply";
         document.form1.submit();
     }
 }

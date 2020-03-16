@@ -13,7 +13,7 @@
 				<pre th:text="${message}"></pre>
 			</div>
 			
-			<form name="formlogin" action="#" th:action="@{/login}" th:object="${UserModel}" method="post">
+			<form name="formlogin" action="#" th:action="@{/systemlogin}" th:object="${UserModel}" method="post">
 			<div style="text-align:left;">
 				<label for="username">ユーザ名:</label>
 				<input type="text" name="email" placeholder="メールアドレス" class="ui-imput-text ui-body-c"/>

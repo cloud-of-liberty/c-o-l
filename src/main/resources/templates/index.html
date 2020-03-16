@@ -15,27 +15,27 @@
         <div>
             <h3>メインメニュー</h3>
             <div style="text-align:center;">
-	            <form name="personInfo" th:action="@{/personInfo}" method='post'>
+	            <form name="personInfo" th:action="@{/UserInfo}" method='post' data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">個人情報照会</button>
                 </form>
             </div>
             <div style="text-align:center;">
-	            <form name="apply" action="#" th:action="@{/newApply}" method="post">
+	            <form name="apply" action="#" th:action="@{/NewApply}" method="post" data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">社員申請</button>
     	        </form>
             </div>
             <div style="text-align:center;">
-	            <form name="applyHistory" action="#" th:action="@{/applyHistory}" method="post">
+	            <form name="applyHistory" action="#" th:action="@{/ApplyHistory}" method="post" data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">社員申請履歴</button>
     	        </form>
             </div>
             <div style="text-align:center;">
-	            <form name="dailyReportList" action="#" th:action="@{/dailyReportListinit}" method="post">
+	            <form name="dailyReportList" action="#" th:action="@{/DailyList}" method="post" data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">日報一覧</button>
     	        </form>
             </div>
             <div style="text-align:center;">
-	            <form name="passwordChange" action="#" th:action="@{/passwordChangeInit}" method="post">
+	            <form name="passwordChange" action="#" th:action="@{/PassChange}" method="post" data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">パスワード変更</button>
     	        </form>
             </div>
@@ -43,7 +43,7 @@
 			    <button type="button" data-theme="b" class="ui-btn-hidden" onclick="javascript:window.open('https://www.c-o-l.jp/','_blank')">会社情報</button>
             </div>
             <div style="text-align:center;">
-	            <form name="logout" action="#" th:action="@{/logout}" method="post">
+	            <form name="logout" action="#" th:action="@{/logout}" method="post" data-ajax="false">
 				    <button type="submit" data-theme="b" class="ui-btn-hidden">ログアウト</button>
     	        </form>
             </div>

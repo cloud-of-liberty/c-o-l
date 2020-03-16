@@ -5,7 +5,7 @@
 <body class="colbody">
     <div id="applyhis" style="margin:0 auto;">
         <div class="header-btn">
-            <form action="#" th:action="@{/returnIndex}" method="post">
+            <form action="#" th:action="@{/menu}" method="post">
                  <p><input type="submit" value="戻る" /> </p>
             </form>
         </div>
@@ -28,7 +28,7 @@
 			      <td  align="left" th:text="${apply.applyTypeName}"></td>
 			      <td  align="left" th:text="${apply.applyStatus}"></td>
 			      <td style="display:none">
-			        <form name="'applyDetail' + ${element.index}" action="#" th:action="@{/applyDetail}" method="post">
+			        <form name="'applyDetail' + ${element.index}" action="#" th:action="@{/ApplyInfo}" method="post">
     	              <input name="id" type="hidden" th:value="${apply.id}" />
     	              <div class="submit-button">
     	                <input type="submit" value="詳細"/>

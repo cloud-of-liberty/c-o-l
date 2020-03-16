@@ -9,7 +9,7 @@
 			<div align="left" style="font-size:16px;color:#ff0000" >
 			<pre th:text="${message}"></pre>
 			</div>
-            <form action="#" th:action="@{/passChange}" th:object="${PassChangeModel}" method="post">
+            <form action="#" th:action="@{/savePassChange}" th:object="${PassChangeModel}" method="post" data-ajax="false">
             <div>
 			  <table class="detail" cellspacing="0">
 			  <tbody>
@@ -43,7 +43,7 @@
             </div>
                 <p><input type="submit" value="変更する" /> </p>
             </form>
-            <form action="#" th:action="@{/returnIndex}" method="post">
+            <form action="#" th:action="@{/menu}" method="post">
                  <p><input type="submit" value="キャンセルする" /> </p>
             </form>
         </div>

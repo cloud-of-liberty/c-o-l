@@ -5,14 +5,14 @@
 <body class="colbody">
     <div id="applyinfo" style="margin:0 auto;">
         <div class="header-btn">
-            <form action="#" th:action="@{/returnIndex}" method="post">
+            <form action="#" th:action="@{/menu}" method="post">
                  <p><input type="submit" value="戻る" /> </p>
             </form>
         </div>
         <br>
         <div>
             <h3>申請情報</h3>
-            <form name="form1" action="#" th:action="@{/saveApply}" th:object="${ApplyModel}" method="post">
+            <form name="form1" action="#" th:action="@{/saveApply}" th:object="${ApplyModel}" method="post" data-ajax="false">
 			<div align="left" style="font-size:16px;color:#ff0000" >
 			<pre th:text="${message}"></pre>
 			</div>

@@ -5,7 +5,7 @@
 <body class="colbody">
     <div id="applyhis" style="margin:0 auto;">
       <div class="header-btn">
-              <form action="#" th:action="@{/returnIndex}" method="post">
+              <form action="#" th:action="@{/menu}" method="post">
                 <input type="submit" value="戻る" />
               </form>
             </div>
@@ -60,7 +60,7 @@
 			          <div class="task-content-col" th:text="${task.taskContent}"></div>
 			          <div class="task-time-col" th:text="${task.spentTime}"></div>
 			        </div>
-			        <form action="#" th:action="@{/newDailyReportInit}"+ method="post">
+			        <form action="#" th:action="@{/DailyEdit}"+ method="post" data-ajax="false">
                       <input type="hidden" name="reportDate" th:value="${report.dateStr}" />
                       <div class="edit-button"><input type="submit" value="&#x270e;"/> </div>
   	      	        </form>
@@ -69,11 +69,6 @@
               </table>
             </div>
           <div class="section-div"></div>
-          <!-- <div class="footer-div">
-          <form action="#" th:action="@{/returnIndex}" method="post">
-            <input type="submit" value="戻る" />
-          </form>
-          </div>-->
         </div>
     </div>
 </body>
