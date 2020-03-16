@@ -8,7 +8,10 @@ import jp.col.dao.IDailyReportDao;
 import jp.col.dao.ProjectDaoImpl;
 import jp.col.dao.DailyReportDaoImpl;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.micrometer.core.instrument.util.StringUtils;
 
@@ -27,23 +30,37 @@ public class DailyReportController{
 	IProjectDao projectDao;
 	IDailyReportDao dailyReportDao;
 
-	@RequestMapping("/newDailyReportInit")
-    public String newDailyReportInit(Map<String, Object> model ,HttpSession ses ,HttpServletRequest request) {
+	@RequestMapping("/DailyEdit")
+    public ModelAndView newDailyReportInit(RedirectAttributes attributes , Map<String, Object> model ,HttpSession ses ,
+    		HttpServletRequest request , 
+			@ModelAttribute(name = "message") String errorMessage ,
+    		@ModelAttribute(name = "errorreport") DailyReportModel errorDailyReport,
+			@ModelAttribute(name = "errorflg") String errorflg) {
+		
+		ModelAndView view = new ModelAndView();
 	  	try{
 	  		Object userObj = ses.getAttribute("user");
 	  		if(userObj == null){
-	            model.put("message", "セッションタイムアウトが発生しました。\r\n再度ログインから実行してください。");
-	            return "login";
+				attributes.addFlashAttribute("message", "セッションタイムアウトが発生しました。\\r\\n再度ログインから実行してください。");
+				view.setViewName("redirect:login");
+				return view;
 	  		}
 
 			projectDao = new ProjectDaoImpl();
 			dailyReportDao = new DailyReportDaoImpl();
 
 	  		List<ProjectModel> projectList = projectDao.findAllProjects();
-			String reportDate = request.getParameter("reportDate").toString();
+	  		String reportDate = null;
+	  		if (request.getParameter("reportDate") != null) {
+				reportDate = request.getParameter("reportDate").toString();
+				ses.setAttribute("reportDate", reportDate);
+	  		} else {
+	  			reportDate = ses.getAttribute("reportDate").toString();
+	  		}
 			if (reportDate == null) {
-		      	model.put("message", "reportDate null");
-			    return "error";
+		  		attributes.addFlashAttribute("message", "reportDate null");
+		  		view.setViewName("redirect:systemerror");
+				return view;
 			}
 			List<String> hourList = new ArrayList<String>();
 			for(int i=0;i<24;i++) {
@@ -56,44 +73,51 @@ public class DailyReportController{
 			model.put("hours", hourList);
 			model.put("minutes", minuteList);
 			
-			DailyReportModel currentDailyReport = new DailyReportModel();
-			currentDailyReport.setReportDate(reportDate);
-    		UserModel user = (UserModel)userObj;
-			currentDailyReport.setEmployee(user.getSfid());
-			currentDailyReport = dailyReportDao.findDailyReportByDate(currentDailyReport);
-			if(currentDailyReport != null) {
-				setTimeForPage(currentDailyReport);
-				setEveryWorkDisplay(model, currentDailyReport);
-				model.put("report", currentDailyReport);
-				
-				setBreakHourMinute(currentDailyReport);
+			if ("1".equals(errorflg)) {
+				model.put("report", errorDailyReport);
 			} else {
-				DailyReportModel dailyReport = new DailyReportModel();
-				dailyReport.setBreakTime("1.00");
-				dailyReport.setBreakHour("1");
-				dailyReport.setBreakMinute("00");
-				dailyReport.setReportDate(reportDate);
-				dailyReport.setEmployee(user.getSfid());
-				model.put("report", dailyReport);
-				
-				setEveryWorkDisplay(model, null);
+				DailyReportModel currentDailyReport = new DailyReportModel();
+				currentDailyReport.setReportDate(reportDate);
+	    		UserModel user = (UserModel)userObj;
+				currentDailyReport.setEmployee(user.getSfid());
+				currentDailyReport = dailyReportDao.findDailyReportByDate(currentDailyReport);
+				if(currentDailyReport != null) {
+					setTimeForPage(currentDailyReport);
+					setEveryWorkDisplay(model, currentDailyReport);
+					model.put("report", currentDailyReport);
+					
+					setBreakHourMinute(currentDailyReport);
+				} else {
+					DailyReportModel newDailyReport = new DailyReportModel();
+					newDailyReport.setBreakTime("1.00");
+					newDailyReport.setBreakHour("1");
+					newDailyReport.setBreakMinute("00");
+					newDailyReport.setReportDate(reportDate);
+					newDailyReport.setEmployee(user.getSfid());
+					model.put("report", newDailyReport);
+					
+					setEveryWorkDisplay(model, null);
+				}
 			}
-
             model.put("projects", projectList);
-	        return "newDailyReport";
+	  		view.setViewName("newDailyReport");
+			return view;
 	  	} catch (Exception e) {
-	      	model.put("message", e.toString());
-		    return "error";
+	  		attributes.addFlashAttribute("message", e.toString());
+	  		view.setViewName("redirect:systemerror");
+			return view;
 	    }
     }
 	
 	@RequestMapping("/saveDailyReport")
-    public String saveDailyReport(@Validated DailyReportModel dailyReport ,BindingResult bindingResult , Map<String, Object> model , HttpSession ses) {
+    public ModelAndView saveDailyReport(RedirectAttributes attributes , @Validated DailyReportModel dailyReport ,BindingResult bindingResult , Map<String, Object> model , HttpSession ses) {
+		ModelAndView view = new ModelAndView();
     	try {
 			Object userObj = ses.getAttribute("user");
 			if(userObj == null){
-				model.put("message", "セッションタイムアウトが発生しました。\r\n再度ログインから実行してください。");
-				return "login";
+				attributes.addFlashAttribute("message", "セッションタイムアウトが発生しました。\\r\\n再度ログインから実行してください。");
+				view.setViewName("redirect:login");
+				return view;
 			}
 			projectDao = new ProjectDaoImpl();
 	  		List<ProjectModel> projectList = projectDao.findAllProjects();
@@ -112,27 +136,25 @@ public class DailyReportController{
 	            	errorMessage.append(fieldError.getDefaultMessage());
 	            	errorMessage.append("\n");
 	            }
-	            model.put("report", dailyReport);
-	      		model.put("message", errorMessage.toString());
-	            model.put("projects", projectList);
-				model.put("hours", hourList);
-				model.put("minutes", minuteList);
 				
 				setEveryWorkDisplay(model, dailyReport);
-	            return "newDailyReport";
+				attributes.addFlashAttribute("errorflg", "1");
+				attributes.addFlashAttribute("message", errorMessage.toString());
+				attributes.addFlashAttribute("errorreport", dailyReport);
+				view.setViewName("redirect:DailyEdit");
+	            return view;
 	        }
 	        
 			setTimeForDB(dailyReport);
 	        String relationError = checkDailyReport(dailyReport);
 	        if(StringUtils.isNotEmpty(relationError)) {
-	            model.put("report", dailyReport);
-	      		model.put("message", relationError);
-	            model.put("projects", projectList);
-				model.put("hours", hourList);
-				model.put("minutes", minuteList);
 				setEveryWorkDisplay(model, dailyReport);
 
-	            return "newDailyReport";
+				view.setViewName("redirect:DailyEdit");
+				attributes.addFlashAttribute("errorflg", "1");
+				attributes.addFlashAttribute("errorreport", dailyReport);
+				attributes.addFlashAttribute("message", relationError);
+	            return view;
 	        }
 
 			UserModel user = (UserModel)userObj;
@@ -148,26 +170,33 @@ public class DailyReportController{
 			} else {
 				String reportStatus = currentDailyReport.getReportStatus();
 				if (reportStatus.equals("Submitted") || reportStatus.equals("Confirmed")) {
-		      		model.put("message", reportStatus + "の日報は修正できません。");
-		      		return "error";
+			  		attributes.addFlashAttribute("message", reportStatus + "の日報は修正できません。");
+					attributes.addFlashAttribute("errorflg", "1");
+					attributes.addFlashAttribute("errorreport", dailyReport);
+			  		view.setViewName("redirect:DailyEdit");
+					return view;
 				} else {
 					dailyReportDao.updateDailyReportByDate(dailyReport);
 				}
 			}
-	      	return "redirect:dailyReportListinit";
+	  		view.setViewName("redirect:DailyList");
+	      	return view;
     	} catch (Exception e) {
-      		model.put("message", e.getMessage());
-      		return "error";
+	  		attributes.addFlashAttribute("message", e.toString());
+	  		view.setViewName("redirect:systemerror");
+			return view;
     	}
 	}
 	
 	@RequestMapping("/commitDailyReport")
-    public String commitDailyReport(@Validated DailyReportModel dailyReport ,BindingResult bindingResult , Map<String, Object> model,HttpSession ses,BindingResult result) {
+    public ModelAndView commitDailyReport(RedirectAttributes attributes , @Validated DailyReportModel dailyReport ,BindingResult bindingResult , Map<String, Object> model,HttpSession ses,BindingResult result) {
+		ModelAndView view = new ModelAndView();
     	try {
 			Object userObj = ses.getAttribute("user");
 			if(userObj == null){
-				model.put("message", "セッションタイムアウトが発生しました。\r\n再度ログインから実行してください。");
-				return "login";
+				attributes.addFlashAttribute("message", "セッションタイムアウトが発生しました。\\r\\n再度ログインから実行してください。");
+				view.setViewName("redirect:login");
+				return view;
 			}
 			projectDao = new ProjectDaoImpl();
 	  		List<ProjectModel> projectList = projectDao.findAllProjects();
@@ -186,25 +215,23 @@ public class DailyReportController{
 	            	errorMessage.append(fieldError.getDefaultMessage());
 	            	errorMessage.append("\n");
 	            }
-	            model.put("report", dailyReport);
-	      		model.put("message", errorMessage.toString());
-	            model.put("projects", projectList);
-				model.put("hours", hourList);
-				model.put("minutes", minuteList);
 				
 				setEveryWorkDisplay(model, dailyReport);
-	            return "newDailyReport";
+				attributes.addFlashAttribute("message", errorMessage.toString());
+				attributes.addFlashAttribute("errorflg", "1");
+				attributes.addFlashAttribute("errorreport", dailyReport);
+				view.setViewName("redirect:DailyEdit");
+	            return view;
 	        }
 	        
 			setTimeForDB(dailyReport);
 	        String relationError = checkDailyReport(dailyReport);
 	        if(StringUtils.isNotEmpty(relationError)) {
-	            model.put("report", dailyReport);
-	      		model.put("message", relationError);
-	            model.put("projects", projectList);
-				model.put("hours", hourList);
-				model.put("minutes", minuteList);
-	            return "newDailyReport";
+				attributes.addFlashAttribute("errorflg", "1");
+				attributes.addFlashAttribute("errorreport", dailyReport);
+				attributes.addFlashAttribute("message", relationError);
+				view.setViewName("redirect:DailyEdit");
+	            return view;
 	        }
 
 	        UserModel user = (UserModel)userObj;
@@ -222,21 +249,29 @@ public class DailyReportController{
 			} else {
 				String reportStatus = currentDailyReport.getReportStatus();
 				if (reportStatus.equals("Submitted")){
-		      		model.put("message", "該当日付の日報は既に提出済みです。");
-		      		return "error";
+					view.setViewName("redirect:DailyEdit");
+					attributes.addFlashAttribute("message", "該当日付の日報は既に提出済みです。");
+					attributes.addFlashAttribute("errorflg", "1");
+					attributes.addFlashAttribute("errorreport", currentDailyReport);
+		            return view;
 				} 
 				if (reportStatus.equals("Confirmed")) {
-		      		model.put("message", "該当日付の日報は既に確認済みです。");
-		      		return "error";
+					view.setViewName("redirect:DailyEdit");
+					attributes.addFlashAttribute("message", "該当日付の日報は既に確認済みです。");
+					attributes.addFlashAttribute("errorflg", "1");
+					attributes.addFlashAttribute("errorreport", currentDailyReport);
+		            return view;
 				} else {
 					dailyReport.setReportStatus("Submitted");
 					dailyReportDao.updateDailyReportByDate(dailyReport);
 				}
 			}
-	      	return "redirect:dailyReportListinit";
+	  		view.setViewName("redirect:DailyList");
+	      	return view;
     	} catch (Exception e) {
-      		model.put("message", e.getMessage());
-      		return "error";
+	  		attributes.addFlashAttribute("message", e.toString());
+	  		view.setViewName("redirect:systemerror");
+			return view;
     	}
 	}
 

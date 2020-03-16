@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.micrometer.core.instrument.util.StringUtils;
@@ -100,7 +101,7 @@ public class DailyReportListController {
 	IDailyReportDao dailyReportDao;
 	
 	@CacheEvict
-    @RequestMapping("/dailyReportListinit")
+    @RequestMapping("/DailyList")
     String init(Map<String, Object> model,HttpSession ses, HttpServletRequest req , String currentDate , String mode) {
     	Object userObj = ses.getAttribute("user");
 	    if(userObj == null){
