@@ -20,10 +20,15 @@
     background-color: white;
   }
   .calendar-title {
+	display: flex;
+    text-align: center;
+  }
+   .calendar-title-date {
+    flex: 1;
     text-align: center;
   }
   .calendar-totaltime {
-    float: right;
+    flex:0 0 120px;
     margin: 1px 20px 0px 0px;
   }  
   .calendar-title a{
