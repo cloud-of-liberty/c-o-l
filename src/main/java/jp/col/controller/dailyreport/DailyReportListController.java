@@ -4,7 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.micrometer.core.instrument.util.StringUtils;
@@ -31,6 +32,8 @@ class Task {
 		this.projectName = projectName;
 		this.taskContent = taskContent;
 		this.spentTime = spentTime;
+	}
+	public Task() {
 	}
 	public String getName() {
 		return name;
@@ -63,6 +66,14 @@ class Report {
 	private String label;
 	private String dateStr;
 	private List<Task> taskList;
+	private String workKind;
+	private String yobi;
+	private String beginTime;
+	private String endTime;
+	private String breakTime;
+	private String workTime;
+	private String offTime;
+	private String reportStatus;
 	public Report() {
 		this.label = "";
 		this.dateStr = "";
@@ -91,6 +102,55 @@ class Report {
 	public void setTaskList(List<Task> taskList) {
 		this.taskList = taskList;
 	}
+	public String getWorkKind() {
+		return workKind;
+	}
+	public void setWorkKind(String workKind) {
+		this.workKind = workKind;
+	}
+	public String getYobi() {
+		return yobi;
+	}
+	public void setYobi(String yobi) {
+		this.yobi = yobi;
+	}
+	public String getBeginTime() {
+		return beginTime;
+	}
+	public void setBeginTime(String beginTime) {
+		this.beginTime = beginTime;
+	}
+	public String getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+	public String getBreakTime() {
+		return breakTime;
+	}
+	public void setBreakTime(String breakTime) {
+		this.breakTime = breakTime;
+	}
+	public String getReportStatus() {
+		return reportStatus;
+	}
+	public void setReportStatus(String reportStatus) {
+		this.reportStatus = reportStatus;
+	}
+	public String getWorkTime() {
+		return workTime;
+	}
+	public void setWorkTime(String workTime) {
+		this.workTime = workTime;
+	}
+	public String getOffTime() {
+		return offTime;
+	}
+	public void setOffTime(String offTime) {
+		this.offTime = offTime;
+	}
+
 }
 
 @Controller
@@ -98,6 +158,21 @@ public class DailyReportListController {
 	
 	private static final String DATEFORMAT_JA = "yyyy年M月";
 
+	private static Map<String, String> reportStatusMap = new HashMap<String, String>();
+	private static Map<String, String> workKindMap = new HashMap<String, String>();
+	
+	static {
+		reportStatusMap.put("saved","保存済");
+		reportStatusMap.put("Submitted","提出済");
+		reportStatusMap.put("Confirmed","確認済");
+		workKindMap.put("Predetermined", "所定");
+		workKindMap.put("HolidayWorkSat", "休出（土・祝）");
+		workKindMap.put("HolidayWorkSun", "休出（日）");
+		workKindMap.put("Holiday", "有休");
+		workKindMap.put("HalfADayOff", "半休");
+		workKindMap.put("SpecialHoliday", "特休");
+		workKindMap.put("Absence", "欠勤");	
+	}
 	IDailyReportDao dailyReportDao;
 	
 	@CacheEvict
@@ -172,7 +247,7 @@ public class DailyReportListController {
 	    
 	    return "dailyReportList";
     }
-    
+/*    
     private String initReportList(Map<String, Object> model, UserModel user, Calendar now) {
     	Calendar firstDay = (Calendar) now.clone();
 	    firstDay.set(Calendar.DAY_OF_MONTH, 1);
@@ -258,7 +333,7 @@ public class DailyReportListController {
         model.put("currentDate", currentDate);
         
         return "dailyReportList";
-    }
+    }*/
 
     private DailyReportModel getDailyReport(List<DailyReportModel> dailyReportList , String dateStr) {
     	for (DailyReportModel model : dailyReportList) {
@@ -268,5 +343,189 @@ public class DailyReportListController {
     	}
     	return null;
     }
+    
+    private String initReportList(Map<String, Object> model, UserModel user, Calendar now) {
+    	
+    	SimpleDateFormat sdfE = new SimpleDateFormat("E", new Locale("ja"));
+
+    	Calendar firstDay = (Calendar) now.clone();
+	    firstDay.set(Calendar.DAY_OF_MONTH, 1);
+	    while (firstDay.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+	    	firstDay.add(Calendar.DATE, -1);
+	    }
+	    
+	    Calendar lastDay = (Calendar) now.clone();
+	    lastDay.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH));
+	    while (lastDay.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+	    	lastDay.add(Calendar.DATE, 1);
+	    }
+
+	    dailyReportDao = new DailyReportDaoImpl();
+	    DailyReportModel dailyReport = new DailyReportModel();
+	    dailyReport.setEmployee(user.getSfid());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM");
+	    String reportDate = sdf.format(now.getTime());
+	    dailyReport.setReportDate(reportDate);
+	    List<DailyReportModel> dailyReportList = dailyReportDao.findDailyReportByMonth(dailyReport);
+	    
+	    List<List<Report>> reportList = new ArrayList<List<Report>>();
+	    List<Report> rowReports = new ArrayList<Report>();
+	    List<Report> detailReportList = new ArrayList<Report>();
+	    Report tempReport;
+	    String totalTime = "0:00";
+	    do {
+            if (firstDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            	rowReports = new ArrayList<Report>();
+	    	}
+            if (firstDay.get(Calendar.MONTH) == now.get(Calendar.MONTH)) {
+            	tempReport = new Report(firstDay);
+            	     
+            	DailyReportModel drm = getDailyReport(dailyReportList , tempReport.getDateStr());
+            	tempReport.setYobi(sdfE.format(firstDay.getTime()));
+            	if (drm != null) {
+            		
+            		if(StringUtils.isNotEmpty(drm.getWorkKind())) {
+            			tempReport.setWorkKind(workKindMap.get(drm.getWorkKind()));
+            		}
+            		if(StringUtils.isNotEmpty(drm.getBeginTime())) {
+            			tempReport.setBeginTime(drm.getBeginTime().substring(0,5));
+            		}
+            		if(StringUtils.isNotEmpty(drm.getEndTime())) {
+            			tempReport.setEndTime(drm.getEndTime().substring(0,5));
+            		}
+            		if(StringUtils.isNotEmpty(drm.getBreakTime())) {
+            			tempReport.setBreakTime(getBreakTimeHHmm(drm.getBreakTime()));
+            		}
+            		tempReport.setWorkTime(getWorkTimeHHmm(drm.getBeginTime(),drm.getEndTime(),tempReport.getBreakTime()));
+            		
+            		totalTime = addTime(totalTime, tempReport.getWorkTime());
+            		
+            		tempReport.setOffTime(getOffTimeHHmm(tempReport.getWorkTime(), tempReport.getWorkKind()));
+            		
+            		if(StringUtils.isNotEmpty(drm.getReportStatus())) {
+            			tempReport.setReportStatus(reportStatusMap.get(drm.getReportStatus()));
+            		}
+            		tempReport.getTaskList().add(new Task());
+            	}
+            	rowReports.add(tempReport);
+            	detailReportList.add(tempReport);
+            } else {
+            	tempReport = new Report();
+            	rowReports.add(tempReport);
+            }
+
+            if (firstDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+            	reportList.add(rowReports);
+            }
+            firstDay.add(Calendar.DATE, 1);
+	    } while (!firstDay.after(lastDay));
+	    
+        model.put("reportList", reportList);
+        model.put("detailReportList", detailReportList);
+        model.put("totalTime", "出勤時間: " + totalTime);
+        
+        SimpleDateFormat sdfJa = new SimpleDateFormat(DATEFORMAT_JA);
+	    String currentDate = sdfJa.format(now.getTime());
+        model.put("currentDate", currentDate);
+        
+        return "dailyReportList";
+    }
+    
+	private String getBreakTimeHHmm(String breakTime){
+		String breakTimeHHmm = "";
+		if (StringUtils.isNotEmpty(breakTime)) {
+			double dblBreakTime = Double.parseDouble(breakTime);
+			int intBreakTime = (int)dblBreakTime;
+			breakTimeHHmm = "" + intBreakTime;
+			//dailyReport.setBreakHour(String.valueOf(intBreakTime));
+			double dblBreakMinute = dblBreakTime - intBreakTime;
+			if (dblBreakMinute == 0) {
+				breakTimeHHmm += ":00";
+			}
+			if (dblBreakMinute == 0.25) {
+				breakTimeHHmm += ":15";
+			}
+			if (dblBreakMinute == 0.5) {
+				breakTimeHHmm += ":30";
+			}
+			if (dblBreakMinute == 0.75) {
+				breakTimeHHmm += ":45";
+			}
+		}
+		return breakTimeHHmm;
+	}
+	
+	private String getWorkTimeHHmm(String beginTime, String endTime, String breakTime){
+		
+		String workTime = "";
+		
+		if (StringUtils.isNotEmpty(beginTime) && StringUtils.isNotEmpty(endTime) && StringUtils.isNotEmpty(breakTime)) {
+
+			int intBeginTimeHour = Integer.parseInt(beginTime.split(":")[0]);
+			int intEndTimeHour = Integer.parseInt(endTime.split(":")[0]);
+			int intBreakTimeHour = Integer.parseInt(breakTime.split(":")[0]);
+			
+			int intBeginTimeMin = Integer.parseInt(beginTime.split(":")[1]);
+			int intEndTimeMin = Integer.parseInt(endTime.split(":")[1]);
+			int intBreakTimeMin = Integer.parseInt(breakTime.split(":")[1]);
+			
+			int workTimeHour = intEndTimeHour - intBeginTimeHour - intBreakTimeHour;
+			int workTimeMin = intEndTimeMin - intBeginTimeMin - intBreakTimeMin;
+			
+			if(workTimeMin < 0) {
+				workTimeHour = workTimeHour - 1;
+				workTimeMin = 60 + workTimeMin;
+			}
+			workTime = "" + workTimeHour + ":" + workTimeMin;
+			if(workTimeMin == 0) {
+				workTime += "0";
+			}
+		}
+		return workTime;
+	}
+	
+	private String getOffTimeHHmm(String workTime, String workKind){
+
+		String offTime = "";
+		if (StringUtils.isNotEmpty(workTime) && StringUtils.isNotEmpty(workKind) ) {
+	
+			switch (workKind) {
+			case "有休" :
+			case "特休" :
+				offTime = "0:00";
+				break;
+			default :
+				int workTimeHour = Integer.parseInt(workTime.split(":")[0] );
+				if (workTimeHour >= 8) {
+					offTime = "" + (workTimeHour - 8) + ":";
+					offTime += workTime.split(":")[1];
+				} else {
+					offTime = "0:00" ;
+				}
+			}
+		}
+		return offTime;
+	}
+	private static String addTime(String totalTime, String workTime) {
+		String returnTotalTime = "";
+		
+		int totalTimeHour = Integer.parseInt(totalTime.split(":")[0]);
+		int totalTimeMin = Integer.parseInt(totalTime.split(":")[1]);
+		int workTimeHour = Integer.parseInt(workTime.split(":")[0]);
+		int workTimeMin = Integer.parseInt(workTime.split(":")[1]);		
+		
+		int returnTotalTimeHour = totalTimeHour + workTimeHour;
+		int returnTotalTimeMin = totalTimeMin + workTimeMin;
+		if (returnTotalTimeMin >= 60) {
+			returnTotalTimeHour += 1;
+			returnTotalTimeMin -= 60;
+		}
+		returnTotalTime = returnTotalTimeHour + ":" + returnTotalTimeMin;
+		if (returnTotalTimeMin == 0 ) {
+			returnTotalTime += "0";
+		}
+		return returnTotalTime;
+	}
+
 }
 
