@@ -507,22 +507,24 @@ public class DailyReportListController {
 		return offTime;
 	}
 	private static String addTime(String totalTime, String workTime) {
-		String returnTotalTime = "";
+		String returnTotalTime = totalTime;
 		
-		int totalTimeHour = Integer.parseInt(totalTime.split(":")[0]);
-		int totalTimeMin = Integer.parseInt(totalTime.split(":")[1]);
-		int workTimeHour = Integer.parseInt(workTime.split(":")[0]);
-		int workTimeMin = Integer.parseInt(workTime.split(":")[1]);		
-		
-		int returnTotalTimeHour = totalTimeHour + workTimeHour;
-		int returnTotalTimeMin = totalTimeMin + workTimeMin;
-		if (returnTotalTimeMin >= 60) {
-			returnTotalTimeHour += 1;
-			returnTotalTimeMin -= 60;
-		}
-		returnTotalTime = returnTotalTimeHour + ":" + returnTotalTimeMin;
-		if (returnTotalTimeMin == 0 ) {
-			returnTotalTime += "0";
+		if (StringUtils.isNotEmpty(totalTime) && StringUtils.isNotEmpty(workTime) ) {
+			int totalTimeHour = Integer.parseInt(totalTime.split(":")[0]);
+			int totalTimeMin = Integer.parseInt(totalTime.split(":")[1]);
+			int workTimeHour = Integer.parseInt(workTime.split(":")[0]);
+			int workTimeMin = Integer.parseInt(workTime.split(":")[1]);		
+			
+			int returnTotalTimeHour = totalTimeHour + workTimeHour;
+			int returnTotalTimeMin = totalTimeMin + workTimeMin;
+			if (returnTotalTimeMin >= 60) {
+				returnTotalTimeHour += 1;
+				returnTotalTimeMin -= 60;
+			}
+			returnTotalTime = returnTotalTimeHour + ":" + returnTotalTimeMin;
+			if (returnTotalTimeMin == 0 ) {
+				returnTotalTime += "0";
+			}
 		}
 		return returnTotalTime;
 	}
