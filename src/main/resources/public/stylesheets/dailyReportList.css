@@ -21,8 +21,17 @@
     background-color: white;
   }
   .calendar-title {
+	display: flex;
     text-align: center;
   }
+   .calendar-title-date {
+    flex: 1;
+    text-align: center;
+  }
+  .calendar-totaltime {
+    flex:0 0 120px;
+    margin: 1px 20px 0px 0px;
+  }  
   .calendar-title a{
     text-decoration: none;
     font-size: 16px;
@@ -135,6 +144,42 @@
     width: 10%;
     padding-right: 5px;
   }
+  .report-row {
+    padding: 5px 0 5px 0;
+  }
+  .report-yobi-col {
+    display: table-cell;
+    width: 10%;
+  }
+  .report-workKind-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-beginTime-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-endTime-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-breakTime-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-workTime1-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-workTime2-col {
+    display: table-cell;
+    width: 14%;
+  }
+  .report-reportStatus-col {
+    display: table-cell;
+    width: 30%;
+  }
+  
   .edit-button {
     display:none;
   }

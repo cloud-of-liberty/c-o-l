@@ -66,7 +66,7 @@
            WHERE DR.ReportDate__c = TO_DATE(#{reportDate},'yyyy/MM/dd') AND DR.Employee__c=#{employee} limit 1
     </select>
     <select id="findDailyReportByMonth" resultType="jp.col.Model.DailyReportModel" parameterType="jp.col.Model.DailyReportModel">
-           SELECT TO_CHAR(DR.ReportDate__c,'yyyy/MM/dd') AS reportDate,DR.WorkKind__c AS workKind,DR.Employee__c AS employee,DR.BeginTime__c AS beginTime,DR.EndTime__c AS endTime,DR.ReportStatus__c AS reportStatus,
+           SELECT TO_CHAR(DR.ReportDate__c,'yyyy/MM/dd') AS reportDate,DR.WorkKind__c AS workKind,DR.Employee__c AS employee,DR.BeginTime__c AS beginTime,DR.EndTime__c AS endTime,DR.ReportStatus__c AS reportStatus,DR.breakTime__c AS breakTime, 
                   DR.Project1__c AS projectId1,P1.Name AS projectName1,DR.WorkContent1__c AS workContent1,DR.Task1__c AS Task1,
                   DR.Project2__c AS projectId2,P2.Name AS projectName2,DR.WorkContent2__c AS workContent2,DR.Task2__c AS Task2,
                   DR.Project3__c AS projectId3,P3.Name AS projectName3,DR.WorkContent3__c AS workContent3,DR.Task3__c AS Task3,

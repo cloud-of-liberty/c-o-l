@@ -13,13 +13,17 @@
             <h3>日報一覧</h3>
             <div class="calendar-div">
               <div class="calendar-title">
-	            <form name="changeMonth" action="#" th:action="@{/dailyReportListinit}" method="post">
+				<div class="calendar-totaltime"></div>
+				<div class="calendar-title-date">
+	            <form name="changeMonth" action="#" th:action="@{/DailyList}" method="post">
     	            <a href="javascript:preMonth();" class="ui-link-inherit">＜</a>
     	            <input name="currentDate" type="hidden" th:value="${currentDate}" />
     	            <input name="mode" type="hidden" />
 	                <span th:text="${currentDate}"></span>
     	            <a href="javascript:nextMonth();" class="ui-link-inherit">＞</a>
     	        </form>
+				</div>
+				<div class="calendar-totaltime" th:text="${totalTime}"></div>
               </div>
 			  <table class="calendar-table">
 			    <tr>
@@ -49,22 +53,35 @@
             
             <div id="detail-list" class="report-detail-list">
 			  <table>
+			    <tr class="odd-line">
+			      <td>日</td>
+			      <td>曜日</td>
+			      <td>区分</td>
+			      <td>始業時刻</td>
+			      <td>終業時刻</td>
+			      <td>休憩</td>
+			      <td>実働</td>
+			      <td>時間外</td>
+			      <td>状態</td>
+			    </tr>			  
 			    <tr th:each="report,element : ${detailReportList}" th:class="${#strings.concat('base-tr ', element.even ? 'even-line' : 'odd-line')}"
 			        th:id="'detail-list' + ${element.index}" 
 			        ondblclick="$(this).find('.edit-button input')[0].click();">
 			      <td th:text="${report.label}"></td>
+			      <td th:text="${report.yobi}"></td>
+			      <td th:text="${report.workKind}"></td>
+			      <td th:text="${report.beginTime}"></td>
+			      <td th:text="${report.endTime}"></td>
+			      <td th:text="${report.breakTime}"></td>
+			      <td th:text="${report.workTime}"></td>
+			      <td th:text="${report.offTime}"></td>
 			      <td>
-			        <div class="task-row" th:each="task : ${report.taskList}">
-			          <div class="task-name-col" th:text="${task.name}"></div>
-			          <div class="task-project-col" th:text="${task.projectName}"></div>
-			          <div class="task-content-col" th:text="${task.taskContent}"></div>
-			          <div class="task-time-col" th:text="${task.spentTime}"></div>
-			        </div>
+			        <span  th:text="${report.reportStatus}"></span>
 			        <form action="#" th:action="@{/DailyEdit}"+ method="post" data-ajax="false">
                       <input type="hidden" name="reportDate" th:value="${report.dateStr}" />
                       <div class="edit-button"><input type="submit" value="&#x270e;"/> </div>
   	      	        </form>
-			      </td>
+  	      	      </td>
 			    </tr>
               </table>
             </div>
