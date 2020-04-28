@@ -45,6 +45,11 @@
     		       Comment__c=#{comment} , breakTime__c=to_number(#{breakTime},'9.99')
     		 WHERE ReportDate__c=TO_DATE(#{reportDate},'yyyy/MM/dd') AND Employee__c=#{employee}
     </update>
+    <update id="updateDailyReportStatus"  parameterType="jp.col.Model.DailyReportModel">
+       UPDATE sfdc.OS_DailyReport__c 
+          SET ReportStatus__c=#{reportStatus}
+        WHERE ReportDate__c=TO_DATE(#{reportDate},'yyyy/MM/dd') AND Employee__c=#{employee}
+       </update>
     <select id="findDailyReportByDate" resultType="jp.col.Model.DailyReportModel" parameterType="jp.col.Model.DailyReportModel">
            SELECT DR.id,TO_CHAR(DR.ReportDate__c,'yyyy/MM/dd') AS reportDate,DR.WorkKind__c AS workKind,DR.Employee__c AS employee,DR.BeginTime__c AS beginTime,DR.EndTime__c AS endTime,
            		  PIS.VALUE AS reportStatus,

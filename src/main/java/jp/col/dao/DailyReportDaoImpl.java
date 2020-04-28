@@ -72,4 +72,18 @@ public class DailyReportDaoImpl implements IDailyReportDao {
 			}
 		}
 	}
+	@Override
+	public void updateDailyReportStatus(DailyReportModel dailyReport) {
+		try {
+			SqlSession  sqlSession = MyBatisUtils.getSqlSession();
+			sqlSession.update("updateDailyReportStatus" , dailyReport);
+			sqlSession.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(sqlSession !=null) {
+				sqlSession.close();
+			}
+		}
+	}
 }

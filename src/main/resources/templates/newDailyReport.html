@@ -2,14 +2,23 @@
 <head　th:include="fragments/layout :: head(~{::title})">
   <title>日報</title>
 </head>
+
 <body class="colbody">
     <div id="dailyReportinfo" style="margin:0 auto;">
         <div class="header-btn">
             <form action="#" th:action="@{/DailyList}" method="post">
                  <p><input type="submit" value="戻る" /> </p>
-            </form>
-        </div>
-        <br>
+			</form>
+		</div>
+		<br>
+		<br>
+		<div class="header-btn">
+			<form action="#" th:action="@{/menu}" method="post">
+				<p></p><input type="submit" value="メインメニューに戻る" /></p>
+			</form>
+		</div>
+		<br>
+		<br>
         <div>
             <h3>日報詳細</h3>
             <form name="form1" action="#" th:action="@{/saveDailyReport}" th:object="${DailyReportModel}" method="post">
@@ -21,15 +30,23 @@
             	<input type="hidden"  name="employee" th:value="${report.employee}">
 			    <table border="0" width="100%">
 			        <tr>
-			            <th>日報日付: </th><td><input th:value="${report.reportDate}" type="text" name="reportDate" readonly="true" /></td>
+						<th>日付: </th>
+						<td>
+							<input  type="hidden" name="reportDate" th:value="${report.reportDate}"/>
+							<span th:text="${report.reportDate}"></span>
+						</td>
 			        </tr>
 			        <tr>
-			            <th>日報状態: </th><td><input th:value="${report.reportStatus}" type="text" name="reportStatus" readonly="true" /></td>
+						<th style="white-space: nowrap">ステータス: </th>
+						<td>
+							<input type="hidden" name="reportStatus" th:value="${report.reportStatus}"/>
+							<span th:text="${report.reportStatus}"></span>
+						</td>
 			        </tr>
 			        <tr>
-			            <th>出勤区分:</th>
+			            <th style="white-space: nowrap">出勤区分:</th>
 			            <td style="text-align:left">
-							<select name="workKind" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id= "workKind" name="workKind" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:selected="${report.workKind=='Predetermined'}"  th:value="Predetermined" th:text="所定"></option>
 								<option th:selected="${report.workKind=='HolidayWorkSat'}"  th:value="HolidayWorkSat" th:text="休出（土・祝）"></option>
@@ -47,47 +64,15 @@
 			            <table border="0">
 				            <tr>
 					            <td>
-					            	<select name="beginHour" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select name="beginHour" id="sh" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
 										<option value=""></option>
-										<option th:each="hour:${hours}" th:selected="${report.beginHour==hour}"  th:value="${hour}" th:text="${hour}"></option>
+										<option th:each="hour:${hours}" th:name="abcd" th:selected="${report.beginHour==hour}"  th:value="${hour}" th:text="${hour}"></option>
 									</select>
 					            </td>
 					            <td>時</td>
 					            <td>
-					            	<select name="beginMinute" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select name="beginMinute" id="sm" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
 										<option th:each="minute:${minutes}" th:selected="${report.beginMinute==minute}"  th:value="${minute}" th:text="${minute}"></option>
-									</select>
-					            </td>
-					            <td>分</td>
-				            </tr>
-			            </table>
-			            </td>
-			        </tr>
-			        <tr>
-			            <th>休憩: </th>
-			            <td>
-			            <table border="0">
-				            <tr>
-					            <td>
-					            	<select name="breakHour" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
-										<option value="0">0</option>
-										<option value="1" th:selected="${report.breakHour=='1'}">1</option>
-										<option value="2" th:selected="${report.breakHour=='2'}">2</option>
-										<option value="3" th:selected="${report.breakHour=='3'}">3</option>
-										<option value="4" th:selected="${report.breakHour=='4'}">4</option>
-										<option value="5" th:selected="${report.breakHour=='5'}">5</option>
-										<option value="6" th:selected="${report.breakHour=='6'}">6</option>
-										<option value="7" th:selected="${report.breakHour=='7'}">7</option>
-										<option value="8" th:selected="${report.breakHour=='8'}">8</option>
-									</select>
-					            </td>
-					            <td>時間</td>
-					            <td>
-					            	<select name="breakMinute" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
-										<option value="00" th:selected="${report.breakMinute=='00'}">00</option>
-										<option value="15" th:selected="${report.breakMinute=='15'}">15</option>
-										<option value="30" th:selected="${report.breakMinute=='30'}">30</option>
-										<option value="45" th:selected="${report.breakMinute=='45'}">45</option>
 									</select>
 					            </td>
 					            <td>分</td>
@@ -101,14 +86,14 @@
 			            <table border="0">
 				            <tr>
 					            <td>
-					            	<select name="endHour" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select name="endHour" id="eh" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
 										<option value=""></option>
 										<option th:each="hour:${hours}" th:selected="${report.endHour==hour}"  th:value="${hour}" th:text="${hour}"></option>
 									</select>
 					            </td>
 					            <td>時</td>
 					            <td>
-					            	<select name="endMinute" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select name="endMinute" id="em" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
 										<option th:each="minute:${minutes}" th:selected="${report.endMinute==minute}"  th:value="${minute}" th:text="${minute}"></option>
 									</select>
 					            </td>
@@ -116,8 +101,44 @@
 				            </tr>
 			            </table>
 			            </td>
+					</tr>
+					<tr>
+			            <th>休憩: </th>
+			            <td>
+			            <table border="0">
+				            <tr>
+					            <td>
+					            	<select name="breakHour" id="bh" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
+										<option value="0">0</option>
+										<option value="1" th:selected="${report.breakHour=='1'}">1</option>
+										<option value="2" th:selected="${report.breakHour=='2'}">2</option>
+										<option value="3" th:selected="${report.breakHour=='3'}">3</option>
+										<option value="4" th:selected="${report.breakHour=='4'}">4</option>
+										<option value="5" th:selected="${report.breakHour=='5'}">5</option>
+										<option value="6" th:selected="${report.breakHour=='6'}">6</option>
+										<option value="7" th:selected="${report.breakHour=='7'}">7</option>
+										<option value="8" th:selected="${report.breakHour=='8'}">8</option>
+									</select>
+					            </td>
+					            <td>時間</td>
+					            <td>
+					            	<select name="breakMinute" id="bm" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" onchange="click1()">
+										<option value="00" th:selected="${report.breakMinute=='00'}">00</option>
+										<option value="15" th:selected="${report.breakMinute=='15'}">15</option>
+										<option value="30" th:selected="${report.breakMinute=='30'}">30</option>
+										<option value="45" th:selected="${report.breakMinute=='45'}">45</option>
+									</select>
+					            </td>
+					            <td>分</td>
+				            </tr>
+			            </table>
+			            </td>
+					</tr>
+					<tr>
+			        	<th style="white-space: nowrap">勤務時間：</th>
+			            <td><span id="jobTime" th:text="8時間"></td>
 			        </tr>
-			        <tr>
+					<tr>
 			        	<th></th>
 			            <td style="text-align:left">
 			            24時(午前0時)を超えた深夜残業の場合、終業は5時まで入力してください。
@@ -139,7 +160,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId1" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project1" name="projectId1" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId1 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -152,14 +173,14 @@
 			            <table border="0">
 				            <tr>
 					            <td>
-					            	<select name="workTime1Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select id="workTime1Hours" name="workTime1Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 										<option value=""></option>
 										<option th:each="hour:${hours}" th:selected="${report.workTime1Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 									</select>
 					            </td>
 					            <td>時間</td>
 					            <td>
-					            	<select name="workTime1Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+					            	<select id="workTime1Minutes" name="workTime1Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 										<option th:each="minute:${minutes}" th:selected="${report.workTime1Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 									</select>
 					            </td>
@@ -191,7 +212,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId2" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project2" name="projectId2" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId2 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -203,14 +224,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime2Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime2Hours" name="workTime2Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime2Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime2Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime2Minutes" name="workTime2Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime2Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -242,7 +263,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId3" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project3" name="projectId3" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId3 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -254,14 +275,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime3Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime3Hours" name="workTime3Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime3Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime3Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime3Minutes" name="workTime3Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime3Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -293,7 +314,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId4" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project4" name="projectId4" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId4 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -305,14 +326,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime4Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime4Hours" name="workTime4Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime4Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime4Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime4Minutes" name="workTime4Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime4Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -344,7 +365,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId5" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project5" name="projectId5" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId5 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -356,14 +377,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime5Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime5Hours" name="workTime5Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime5Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime5Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime5Minutes" name="workTime5Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime5Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -395,7 +416,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId6" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project6" name="projectId6" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId6 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -407,14 +428,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime6Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime6Hours" name="workTime6Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime6Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime6Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime6Minutes" name="workTime6Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime6Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -446,7 +467,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId7" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project7" name="projectId7" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId7 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -458,14 +479,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime7Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime7Hours" name="workTime7Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime7Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime7Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime7Minutes" name="workTime7Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime7Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -497,7 +518,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId8" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project8" name="projectId8" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId8 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -509,14 +530,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime8Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime8Hours" name="workTime8Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime8Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime8Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime8Minutes" name="workTime8Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime8Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -548,7 +569,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId9" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project9" name="projectId9" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId9 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -560,14 +581,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime9Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime9Hours" name="workTime9Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime9Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime9Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime9Minutes" name="workTime9Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime9Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -599,7 +620,7 @@
 			        <tr>
 			            <th>プロジェクト:</th>
 			            <td>
-							<select name="projectId10" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
+							<select id="project10" name="projectId10" align="left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}">
 								<option value="">--選択してください--</option>
 								<option th:each="project:${projects}" th:value="${project.sfid}" th:selected="${report.projectId10 == project.sfid}" th:text="${project.name}"></option>
 							</select>
@@ -611,14 +632,14 @@
 				            <table border="0">
 					            <tr>
 						            <td>
-						            	<select name="workTime10Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime10Hours" name="workTime10Hours" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option value=""></option>
 											<option th:each="hour:${hours}" th:selected="${report.workTime10Hours==hour}"  th:value="${hour}" th:text="${hour}"></option>
 										</select>
 						            </td>
 						            <td>時間</td>
 						            <td>
-						            	<select name="workTime10Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
+						            	<select id="workTime10Minutes" name="workTime10Minutes" style="text-align:left" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" >
 											<option th:each="minute:${minutes}" th:selected="${report.workTime10Minutes==minute}"  th:value="${minute}" th:text="${minute}"></option>
 										</select>
 						            </td>
@@ -638,7 +659,7 @@
 </details>
 			    <table>
 			        <tr>
-			            <th>備考: </th>
+			            <th style="white-space: nowrap">備考: </th>
 			            <td><textarea th:text="${report.comment}" rows="2" cols="60" name="comment" id="comment" style="font-size:9pt;height:100px" maxlength="255" th:readonly="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}" ></textarea></td>
 			        </tr>
 			    </table>
@@ -647,7 +668,18 @@
             </div>
             <div>
 			    <p><input type="button" value="提出" onClick="javascript:commitDailyReport();" th:disabled="${report.reportStatus=='提出済' or report.reportStatus=='確認済'}"/></p>
-            </div>
+			</div>
+			<div>
+			    <p><input type="button" value="取消" onClick="javascript:click2();" th:disabled="${report.reportStatus=='保存済' or report.reportStatus=='確認済'}"/></p>
+			</div>
+			<table>
+				<tr>
+					<th></th>
+					<td style="text-align:left">
+					取消をクリックすると、提出済みに保存を変更します。
+					</td>
+				</tr>
+			</table>
 			</form>
         </div>
     </div>

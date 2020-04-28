@@ -11,6 +11,7 @@ public interface IDailyReportDao {
 	DailyReportModel findDailyReportByDate(DailyReportModel dailyReport);
 	
 	void updateDailyReportByDate(DailyReportModel dailyReport);
+	void updateDailyReportStatus(DailyReportModel dailyReport);
 	
 	List<DailyReportModel> findDailyReportByMonth(DailyReportModel dailyReport);
 }

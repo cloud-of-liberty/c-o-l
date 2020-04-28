@@ -89,8 +89,11 @@ public class DailyReportController{
 					setBreakHourMinute(currentDailyReport);
 				} else {
 					DailyReportModel newDailyReport = new DailyReportModel();
+					newDailyReport.setWorkKind("Predetermined");
 					newDailyReport.setBreakTime("1.00");
 					newDailyReport.setBreakHour("1");
+					newDailyReport.setBeginHour("10");
+					newDailyReport.setEndHour("19");
 					newDailyReport.setBreakMinute("00");
 					newDailyReport.setReportDate(reportDate);
 					newDailyReport.setEmployee(user.getSfid());
@@ -274,9 +277,47 @@ public class DailyReportController{
 			return view;
     	}
 	}
-
+	@RequestMapping("/cancelReport")
+    public ModelAndView cancelReport(RedirectAttributes attributes , @Validated DailyReportModel dailyReport ,BindingResult bindingResult , Map<String, Object> model , HttpSession ses) {
+		ModelAndView view = new ModelAndView();
+    	try {
+			Object userObj = ses.getAttribute("user");
+			if(userObj == null){
+				attributes.addFlashAttribute("message", "セッションタイムアウトが発生しました。\\r\\n再度ログインから実行してください。");
+				view.setViewName("redirect:login");
+				return view;
+			}
+			UserModel user = (UserModel)userObj;
+			dailyReportDao = new DailyReportDaoImpl();
+			dailyReport.setEmployee(user.getSfid());
+			dailyReport.setReportStatus("saved");
+			dailyReportDao.updateDailyReportStatus(dailyReport);
+			view.setViewName("redirect:DailyList");
+	      	return view;
+			
+    	} catch (Exception e) {
+	  		attributes.addFlashAttribute("message", e.toString());
+	  		view.setViewName("redirect:systemerror");
+			return view;
+    	}
+	}
 	private String checkDailyReport(DailyReportModel dailyReport) {
 		StringBuilder errorMessage = new StringBuilder();
+		if(StringUtils.isNotEmpty(dailyReport.getTask1()) || StringUtils.isNotEmpty(dailyReport.getProjectId1()) ||
+				StringUtils.isNotEmpty(dailyReport.getWorkContent1()) || StringUtils.isNotEmpty(dailyReport.getWorkTime1())) {
+			if(StringUtils.isEmpty(dailyReport.getTask1())) {
+				errorMessage.append("タスク1を入力してください。\n");
+			}
+			if(StringUtils.isEmpty(dailyReport.getProjectId1())) {
+				errorMessage.append("プロジェクト1を選択してください。\n");
+			}
+			if(StringUtils.isEmpty(dailyReport.getWorkTime1())) {
+				errorMessage.append("仕事時間1を入力してください。\n");
+			}
+			if(StringUtils.isEmpty(dailyReport.getWorkContent1())) {
+				errorMessage.append("仕事内容1を入力してください。\n");
+			}
+		}
 		if(StringUtils.isNotEmpty(dailyReport.getTask2()) || StringUtils.isNotEmpty(dailyReport.getProjectId2()) ||
 				StringUtils.isNotEmpty(dailyReport.getWorkContent2()) || StringUtils.isNotEmpty(dailyReport.getWorkTime2())) {
 			if(StringUtils.isEmpty(dailyReport.getTask2())) {

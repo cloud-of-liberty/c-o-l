@@ -31,7 +31,7 @@ public class DailyReportModel {
     //日報状態
 	private String reportStatus;
 	//プロジェクトId1
-    @NotBlank(message = "プロジェクト1を選択してください。")
+    //@NotBlank(message = "プロジェクト1を選択してください。")
 	private String projectId1;
 	//プロジェクトId2
 	private String projectId2;
@@ -52,7 +52,7 @@ public class DailyReportModel {
 	//プロジェクトId10
 	private String projectId10;
 	//タスク1
-    @NotBlank(message = "タスク1を入力してください。")
+    //@NotBlank(message = "タスク1を入力してください。")
     @Length(max=100 , message = "タスク1が長すぎです。")
 	private String task1;
 	//タスク2
@@ -105,7 +105,7 @@ public class DailyReportModel {
 	//仕事時間1
     @Pattern(regexp="^(\\d{1,2}(\\.\\d{1})?)?$" , message="仕事時間1の入力は不正です。")
 	private String workTime1;
-    @NotBlank(message = "仕事時間1の時間を入力してください。")
+    //@NotBlank(message = "仕事時間1の時間を入力してください。")
 	private String workTime1Hours;
     @NotBlank(message = "仕事時間1の分を入力してください。")
 	private String workTime1Minutes;
@@ -146,7 +146,7 @@ public class DailyReportModel {
 	private String workTime10Hours;
 	private String workTime10Minutes;
 	//仕事内容1
-    @NotBlank(message = "仕事内容1を入力してください。")
+    //@NotBlank(message = "仕事内容1を入力してください。")
     @Length(max=255 , message = "仕事内容1が長すぎです。")
 	private String workContent1;
 	//仕事内容2
